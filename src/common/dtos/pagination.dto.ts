@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsOptional, IsPositive, Min } from "class-validator";
+import { IsIn, IsOptional, IsPositive, Min } from "class-validator";
 
 
 export class PaginationDto {
@@ -24,4 +24,11 @@ export class PaginationDto {
     @Type(() => Number) // enableImplicitConversions: true en el main
     offset?: number;
 
+    @ApiProperty({
+        default: '',
+        description: 'Filter results by gender',
+    })
+    @IsOptional()
+    @IsIn(['men', 'women', 'unisex', 'kid'])
+    gender: 'men' | 'women' | 'unisex' | 'kid';
 }

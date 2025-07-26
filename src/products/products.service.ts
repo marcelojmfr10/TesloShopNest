@@ -48,13 +48,17 @@ export class ProductsService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { limit = 10, offset = 0 } = paginationDto;
+    const { limit = 10, offset = 0, gender = '' } = paginationDto;
     const products = await this.productRepository.find({
       take: limit,
       skip: offset,
       relations: {
         images: true
-      }
+      },
+      order: {
+        id: 'ASC',
+      },
+      where: gender ? [{ gender }, { gender: 'unisex' }] : {},
     });
 
     return products.map(({ images, ...rest }) => ({
@@ -114,9 +118,9 @@ export class ProductsService {
 
       if (images) {
         await queryRunner.manager.delete(ProductImage, { product: { id } });
-        product.images = images.map(image => this.productImageRepository.create({url: image}));
+        product.images = images.map(image => this.productImageRepository.create({ url: image }));
       } // else {
-        // product.images = await this.productImageRepository.findBy({product: {id}});
+      // product.images = await this.productImageRepository.findBy({product: {id}});
       //}
 
       product.user = user;
@@ -152,7 +156,7 @@ export class ProductsService {
   async deleteAllProducts() {
     const query = this.productRepository.createQueryBuilder('product');
     try {
-      
+
       return await query.delete().where({}).execute();
 
     } catch (error) {
