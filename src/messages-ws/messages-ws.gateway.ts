@@ -4,7 +4,7 @@ import { Server, Socket } from 'socket.io';
 import { NewMessageDto } from './dto/new-message.dto';
 import { User } from 'src/auth/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from 'src/auth/interfaces';
+import { JwtPayload } from '../auth/interfaces';
 
 @WebSocketGateway({ cors: true })
 export class MessagesWsGateway implements OnGatewayConnection, OnGatewayDisconnect {
