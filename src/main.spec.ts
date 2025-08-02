@@ -108,7 +108,8 @@ describe('Main.ts', () => {
 
     it('should create swagger document', async () => {
         await bootstrap();
-        // revisar esta prueba, ya que en el vídeo no lleva () => const documentFactory = () => SwaggerModule.createDocument(app, config);
+        // funciona, quitando la función factory
+        // const documentFactory = () => SwaggerModule.createDocument(app, config);
         expect(SwaggerModule.createDocument).toHaveBeenCalled();
         expect(SwaggerModule.setup).toHaveBeenCalledWith(
             'api', expect.anything(), 'document'

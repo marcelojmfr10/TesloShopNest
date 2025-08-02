@@ -61,10 +61,18 @@ export class ProductsService {
       where: gender ? [{ gender }, { gender: 'unisex' }] : {},
     });
 
-    return products.map(({ images, ...rest }) => ({
-      ...rest,
-      images: images?.map(img => img.url)
-    }))
+    const totalProducts = await this.productRepository.count({
+      where: gender ? [{ gender }, { gender: 'unisex' }] : {},
+    });
+
+    return {
+      count: totalProducts,
+      pages: Math.ceil(totalProducts / limit),
+      products: products.map(({ images, ...rest }) => ({
+        ...rest,
+        images: images?.map(img => img.url)
+      }))
+    }
   }
 
   async findOne(term: string) {
@@ -163,5 +171,4 @@ export class ProductsService {
       this.handleDBExceptions(error);
     }
   }
-
 }
