@@ -31,7 +31,7 @@ export class AuthService {
 
       const { password: _, ...userWithoutPassword } = user;
 
-      return { ...userWithoutPassword, token: this.getJwtToken({ id: user.id }) };
+      return { user: userWithoutPassword, token: this.getJwtToken({ id: user.id }) };
 
     } catch (error) {
       this.handleDBErrors(error);
@@ -43,19 +43,21 @@ export class AuthService {
 
     const user = await this.userRepository.findOne({
       where: { email, isActive: true }, select: {
-        email: true, password: true, id: true,
+        email: true, password: true, id: true, fullName: true, isActive: true, roles: true
       }
     });
 
     if (!user) throw new UnauthorizedException(`Credentials are not valid (email)`);
 
     if (!bcrypt.compareSync(password, user.password)) throw new UnauthorizedException(`Credentials are not valid (password)`);
-    
-    return { ...user, token: this.getJwtToken({ id: user.id }) };
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    return { user: userWithoutPassword, token: this.getJwtToken({ id: user.id }) };
   }
 
   async checkAuthStatus(user: User) {
-    return { ...user, token: this.getJwtToken({ id: user.id }) };
+    return { user: user, token: this.getJwtToken({ id: user.id }) };
   }
 
   private getJwtToken(payload: JwtPayload) {

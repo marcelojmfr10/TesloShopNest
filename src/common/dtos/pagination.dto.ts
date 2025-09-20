@@ -29,6 +29,6 @@ export class PaginationDto {
         description: 'Filter results by gender',
     })
     @IsOptional()
-    @IsIn(['men', 'women', 'unisex', 'kid'])
-    gender: 'men' | 'women' | 'unisex' | 'kid';
+    @IsIn(['men', 'women', 'unisex', 'kid', ''])
+    gender: 'men' | 'women' | 'unisex' | 'kid' | '';
 }
