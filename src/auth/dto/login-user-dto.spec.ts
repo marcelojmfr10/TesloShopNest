@@ -1,29 +1,31 @@
-
-
-import { validate } from "class-validator";
-import { LoginUserDto } from "./login-user.dto";
-import { plainToClass } from "class-transformer";
-
+import { validate } from 'class-validator';
+import { LoginUserDto } from './login-user.dto';
+import { plainToClass } from 'class-transformer';
 
 describe('LoginUserDto', () => {
-
-
-    it('should have the correct properties', async () => {
-        const dto = plainToClass(LoginUserDto, { email: 'test1@google.com', password: 'Abc123' });
-
-        const errors = await validate(dto);
-        expect(errors.length).toBe(0);
+  it('should have the correct properties', async () => {
+    const dto = plainToClass(LoginUserDto, {
+      email: 'test1@google.com',
+      password: 'Abc123',
     });
 
-    it('should throw errors if password is not valid', async () => {
-        const dto = plainToClass(LoginUserDto, { email: 'test1@google.com', password: 'abc123' });
+    const errors = await validate(dto);
+    expect(errors.length).toBe(0);
+  });
 
-        const errors = await validate(dto);
-        const passwordError = errors.find(error => error.property === 'password');
-
-        expect(passwordError).toBeDefined();
-        expect(passwordError?.constraints).toBeDefined();
-        expect(passwordError?.constraints?.matches).toBe('The password must have a uppercase, lowercase letter and a number');
+  it('should throw errors if password is not valid', async () => {
+    const dto = plainToClass(LoginUserDto, {
+      email: 'test1@google.com',
+      password: 'abc123',
     });
 
-})
+    const errors = await validate(dto);
+    const passwordError = errors.find((error) => error.property === 'password');
+
+    expect(passwordError).toBeDefined();
+    expect(passwordError?.constraints).toBeDefined();
+    expect(passwordError?.constraints?.matches).toBe(
+      'The password must have a uppercase, lowercase letter and a number',
+    );
+  });
+});

@@ -1,48 +1,45 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { FilesService } from "./files.service";
-import { join } from "path";
-import { existsSync } from "fs";
-import { BadRequestException } from "@nestjs/common";
+import { Test, TestingModule } from '@nestjs/testing';
+import { FilesService } from './files.service';
+import { join } from 'path';
+import { existsSync } from 'fs';
+import { BadRequestException } from '@nestjs/common';
 
 jest.mock('fs', () => ({
-    existsSync: jest.fn(),
-}))
-
+  existsSync: jest.fn(),
+}));
 
 describe('FilesService', () => {
-  
-    let service: FilesService;
+  let service: FilesService;
 
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [FilesService],
+    }).compile();
 
-    beforeEach(async () => {
+    service = module.get<FilesService>(FilesService);
+  });
 
-        const module: TestingModule = await Test.createTestingModule({
-            providers: [FilesService]
-        }).compile();
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
 
-        service = module.get<FilesService>(FilesService);
-    });
+  it('should return the correct path if image exists', () => {
+    const imageName = 'test-image.jpg';
+    const expectedPath = join(__dirname, '../../static/products', imageName);
 
-    it('should be defined', () => {
-        expect(service).toBeDefined();
-    });
+    (existsSync as jest.Mock).mockReturnValue(true);
 
-    it('should return the correct path if image exists', () => {
-        const imageName = 'test-image.jpg';
-        const expectedPath = join(__dirname, '../../static/products', imageName);
+    const result = service.getStaticProductImage(imageName);
+    expect(result).toBe(expectedPath);
+  });
 
-        (existsSync as jest.Mock).mockReturnValue(true);
+  it('should throw a BadRequestException if the image does not exists', () => {
+    const imageName = 'no-test-image.jpg';
 
-        const result = service.getStaticProductImage(imageName);
-        expect(result).toBe(expectedPath);
-    });
+    (existsSync as jest.Mock).mockReturnValue(false);
 
-    it('should throw a BadRequestException if the image does not exists', () => {
-        const imageName = 'no-test-image.jpg';
-
-        (existsSync as jest.Mock).mockReturnValue(false);
-
-        expect(() => service.getStaticProductImage(imageName)).toThrow(new BadRequestException(`No product found with image ${imageName}`));
-    });
-
+    expect(() => service.getStaticProductImage(imageName)).toThrow(
+      new BadRequestException(`No product found with image ${imageName}`),
+    );
+  });
 });

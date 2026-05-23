@@ -34,4 +34,4 @@ import { MessagesWsModule } from './messages-ws/messages-ws.module';
     MessagesWsModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

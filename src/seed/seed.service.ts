@@ -7,20 +7,18 @@ import { Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 
-
 @Injectable()
 export class SeedService {
-
   constructor(
-    private readonly productsService: ProductsService, 
-    @InjectRepository(User) private readonly userRepository: Repository<User>) {
-  }
-  
+    private readonly productsService: ProductsService,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {}
+
   async runSeed() {
     await this.deleteTables();
     const firstUser = await this.insertUsers();
     await this.insertNewProducts(firstUser);
-    return 'SEED EXECUTED'
+    return 'SEED EXECUTED';
   }
 
   private async deleteTables() {
@@ -33,9 +31,9 @@ export class SeedService {
   private async insertUsers() {
     const seedUsers = initialData.users;
     const users: User[] = [];
-    seedUsers.forEach(user => {
-      user = {...user, password: bcrypt.hashSync(user.password, 10)}
-      users.push(this.userRepository.create(user))
+    seedUsers.forEach((user) => {
+      user = { ...user, password: bcrypt.hashSync(user.password, 10) };
+      users.push(this.userRepository.create(user));
     });
 
     const dbUsers = await this.userRepository.save(users);
@@ -46,7 +44,7 @@ export class SeedService {
     const products = initialData.products;
     const insertPromises: Promise<any>[] = [];
 
-    products.forEach(product => {
+    products.forEach((product) => {
       insertPromises.push(this.productsService.create(product, user));
     });
 
@@ -54,5 +52,4 @@ export class SeedService {
 
     return true;
   }
-
 }

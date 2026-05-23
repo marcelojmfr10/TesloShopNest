@@ -1,30 +1,31 @@
-import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import { getRawHeaders } from "./raw-headers.decorator";
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { getRawHeaders } from './raw-headers.decorator';
 
 jest.mock('@nestjs/common', () => ({
-    createParamDecorator: jest.fn().mockImplementation(() => jest.fn()), // jest.fn()
-}))
-
+  createParamDecorator: jest.fn().mockImplementation(() => jest.fn()), // jest.fn()
+}));
 
 describe('RawHeaders Decorator', () => {
+  const mockExecutionContext = {
+    switchToHttp: jest.fn().mockReturnValue({
+      getRequest: jest.fn().mockReturnValue({
+        rawHeaders: ['Authorization', 'Bearer token', 'User-Agent', 'NestJS'],
+      }),
+    }),
+  } as unknown as ExecutionContext;
 
-    const mockExecutionContext = {
-        switchToHttp: jest.fn().mockReturnValue({
-            getRequest: jest.fn().mockReturnValue({
-                rawHeaders: ['Authorization', 'Bearer token', 'User-Agent', 'NestJS']
-            }),
-        })
-    } as unknown as ExecutionContext;
-  
-    it('should return the raw headers from the request', () => {
-        const result = getRawHeaders('', mockExecutionContext);
+  it('should return the raw headers from the request', () => {
+    const result = getRawHeaders('', mockExecutionContext);
 
-        expect(result).toEqual(['Authorization', 'Bearer token', 'User-Agent', 'NestJS']);
-    });
+    expect(result).toEqual([
+      'Authorization',
+      'Bearer token',
+      'User-Agent',
+      'NestJS',
+    ]);
+  });
 
-    it('should call createParamDecorator with getRawHeader', () => {
-        expect(createParamDecorator).toHaveBeenCalledWith(getRawHeaders);
-    });
-
-
-})
+  it('should call createParamDecorator with getRawHeader', () => {
+    expect(createParamDecorator).toHaveBeenCalledWith(getRawHeaders);
+  });
+});

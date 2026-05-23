@@ -13,11 +13,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   providers: [AuthService, JwtStrategy],
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([
-      User
-    ]),
+    TypeOrmModule.forFeature([User]),
     PassportModule.register({
-      defaultStrategy: 'jwt'
+      defaultStrategy: 'jwt',
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -28,11 +26,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         return {
           secret: configService.get('JWT_SECRET'),
           signOptions: {
-            expiresIn: '2h'
-          }
-        }
-      }
-    })
+            expiresIn: '2h',
+          },
+        };
+      },
+    }),
     // JwtModule.register({
     //   secret: process.env.JWT_SECRET,
     //   signOptions: {
@@ -40,6 +38,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     //   }
     // })
   ],
-  exports: [TypeOrmModule, JwtStrategy, PassportModule, JwtModule]
+  exports: [TypeOrmModule, JwtStrategy, PassportModule, JwtModule],
 })
-export class AuthModule { }
+export class AuthModule {}

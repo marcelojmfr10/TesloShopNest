@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -10,17 +15,14 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
-
     try {
-
       const { password, ...userData } = createUserDto;
 
       const user = this.userRepository.create({
@@ -31,8 +33,10 @@ export class AuthService {
 
       const { password: _, ...userWithoutPassword } = user;
 
-      return { user: userWithoutPassword, token: this.getJwtToken({ id: user.id }) };
-
+      return {
+        user: userWithoutPassword,
+        token: this.getJwtToken({ id: user.id }),
+      };
     } catch (error) {
       this.handleDBErrors(error);
     }
@@ -42,18 +46,29 @@ export class AuthService {
     const { email, password } = loginUserDto;
 
     const user = await this.userRepository.findOne({
-      where: { email, isActive: true }, select: {
-        email: true, password: true, id: true, fullName: true, isActive: true, roles: true
-      }
+      where: { email, isActive: true },
+      select: {
+        email: true,
+        password: true,
+        id: true,
+        fullName: true,
+        isActive: true,
+        roles: true,
+      },
     });
 
-    if (!user) throw new UnauthorizedException(`Credentials are not valid (email)`);
+    if (!user)
+      throw new UnauthorizedException(`Credentials are not valid (email)`);
 
-    if (!bcrypt.compareSync(password, user.password)) throw new UnauthorizedException(`Credentials are not valid (password)`);
+    if (!bcrypt.compareSync(password, user.password))
+      throw new UnauthorizedException(`Credentials are not valid (password)`);
 
     const { password: _, ...userWithoutPassword } = user;
 
-    return { user: userWithoutPassword, token: this.getJwtToken({ id: user.id }) };
+    return {
+      user: userWithoutPassword,
+      token: this.getJwtToken({ id: user.id }),
+    };
   }
 
   async checkAuthStatus(user: User) {
@@ -71,5 +86,4 @@ export class AuthService {
     console.log(error);
     throw new InternalServerErrorException('Please check server logs');
   }
-
 }
